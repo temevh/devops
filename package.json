@@ -1,0 +1,24 @@
+{
+  "name": "devops",
+  "version": "1.0.0",
+  "description": "This is a template readme file to enforce main default branch. Edit this file as you see fit.",
+  "repository": {
+    "type": "git",
+    "url": "https://course-gitlab.tuni.fi/comp-se-140-2026-2027/teemu_hamalainen.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.4.1",
+    "typescript": "^7.0.2"
+  }
+}
