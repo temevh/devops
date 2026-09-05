@@ -31,7 +31,7 @@ Use postgresql, deploy database in separate container with persistent storage. O
 POST "/blocklist"
 
 - Accepts data in text/plain format following the template: ipaddress,path Example request body: 192.168.1.1,/admin
-- Store ipaddress and path in database only fhe therea are fewer than 2 existing records for the given ipaddress
+- Store ipaddress and path in database only if there are fewer than 2 existing records for the given ipaddress
 - return true as text/plain if 2 or more records for ipaddress are found, otherwise false
 
 GET "/blocklist"
