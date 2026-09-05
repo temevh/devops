@@ -45,3 +45,11 @@ docker stop devops-postgres && docker rm devops-postgres
 # Remove the volume (destroys all data)
 
 docker volume rm pgdata
+
+# Build container
+
+docker build -f [folder]/Dockerfile -t [service]-service .
+
+# Run the container
+
+docker run -p 3000:3000 [service]-service
