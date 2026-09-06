@@ -29,7 +29,25 @@ app.get('/blocklist', async (req: Request, res: Response) => {
         res.json(dbRes.rows);
     } catch (err) {
         console.error(err);
-        res.status(500).send('Database error');
+        res.status(502).send('Database error');
+    }
+});
+
+app.get('/isBlocked', async (req: Request, res: Response) => {
+    const { ip } = req.query;
+
+    if (ip) {
+        try {
+            console.log('Checking for IP', ip);
+            const query = `SELECT * FROM bans WHERE ipaddress = '${ip}'`;
+            const dbRes = await pool.query(query);
+            const blocked = dbRes.rowCount !== 0;
+            console.log('blocked', blocked);
+            res.json(JSON.stringify(blocked));
+        } catch (err) {
+            console.error(err);
+            res.status(502);
+        }
     }
 });
 
