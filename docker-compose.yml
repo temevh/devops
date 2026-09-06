@@ -28,5 +28,17 @@ services:
             postgres:
                 condition: service_healthy
 
+    api-service:
+        build:
+            context: .
+            dockerfile: api/Dockerfile
+        ports:
+            - '8199:8199'
+        depends_on:
+            postgres:
+                condition: service_healthy
+            block-service:
+                condition: service_started
+
 volumes:
     pgdata:
