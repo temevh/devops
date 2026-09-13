@@ -16,7 +16,7 @@ services:
             timeout: 5s
             retries: 5
         networks:
-            - isolated
+            - db-net
 
     block-service:
         build:
@@ -26,7 +26,8 @@ services:
             postgres:
                 condition: service_healthy
         networks:
-            - isolated
+            - app-net
+            - db-net
 
     api-service:
         build:
@@ -40,7 +41,7 @@ services:
             block-service:
                 condition: service_started
         networks:
-            - isolated
+            - app-net
 
     log-service:
         build:
@@ -50,12 +51,14 @@ services:
             postgres:
                 condition: service_healthy
         networks:
-            - isolated
+            - app-net
 
 volumes:
     pgdata:
 
 networks:
-    isolated:
+    app-net:
+        driver: bridge
+    db-net:
         driver: bridge
         internal: true

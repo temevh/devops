@@ -9,11 +9,12 @@ app.get('/', async (req: Request, res: Response) => {
     try {
         const blockRes = await axios.get(uri);
         const isBlocked = JSON.parse(blockRes.data);
-        console.log(blockRes);
         if (!isBlocked) {
-            axios.get('http://log-service:3000/');
+            const logRes = await axios.get('http://log-service:3000/');
+            res.status(200).json(logRes.data);
+        } else if (isBlocked) {
+            res.status(404).end();
         }
-        res.status(200).json('Hello from apiService');
     } catch (err) {
         res.status(502).json(err);
     }
