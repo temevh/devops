@@ -12,7 +12,7 @@ app.get('/', (req: Request, res: Response) => {
         if (err) throw err;
         console.log('Added', addToLog, 'to logs');
     });
-    res.send(timeStamp);
+    res.status(200).json(addToLog);
 });
 
 app.get('/log', (req: Request, res: Response) => {
