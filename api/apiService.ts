@@ -3,9 +3,19 @@ import axios from 'axios';
 
 const app: Express = express();
 
+const getIp = (req: Request): string => {
+    const ff = req.headers['x-forwarded-for'];
+    if (ff) {
+        const ip = Array.isArray(ff) ? ff[0] : ff.split(',')[0];
+        return ip.trim();
+    }
+
+    return req.socket.remoteAddress || req.ip || '';
+};
+
 app.get('/', async (req: Request, res: Response) => {
-    const testIp = '127.5.6.7';
-    const uri = `http://block-service:3000/isBlocked?ip=${testIp}`;
+    const ip = getIp(req);
+    const uri = `http://block-service:3000/isBlocked?ip=${encodeURIComponent(ip)}`;
     try {
         const blockRes = await axios.get(uri);
         const isBlocked = JSON.parse(blockRes.data);
