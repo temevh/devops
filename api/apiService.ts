@@ -30,6 +30,37 @@ app.get('/', async (req: Request, res: Response) => {
     }
 });
 
+app.get('/log', async (req: Request, res: Response) => {
+    try {
+        const logData = await axios.get('http://log-service:3000/log');
+        if (logData) {
+            res.status(200).json(logData);
+        } else {
+            res.status(404).end();
+        }
+    } catch (err) {
+        res.status(502).json(err);
+    }
+});
+
+app.get('/blocklist', async (req: Request, res: Response) => {
+    const ip = getIp(req);
+    console.log('IP', ip);
+    try {
+        const blockData = await axios.get(
+            'http://block-service:3000/blocklist',
+            { headers: { ip: ip } },
+        );
+        if (blockData) {
+            res.status(200).json(blockData);
+        } else {
+            res.status(404).end();
+        }
+    } catch (err) {
+        res.status(502).json(err);
+    }
+});
+
 app.listen(8199, () => {
     console.log('API service listening on port 8199');
 });
