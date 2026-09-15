@@ -5,40 +5,33 @@ import path from 'path';
 const app: Express = express();
 let counter = 0;
 
+const filePath = path.join(import.meta.dirname, 'logs.txt');
+
 app.get('/', (req: Request, res: Response) => {
     counter += 1;
-    const timeStamp = new Date();
-    const addToLog = `\r\n${counter},${timeStamp.toISOString()}`;
-    fs.appendFile(
-        path.join(import.meta.dirname, 'logs.txt'),
-        addToLog,
-        function (err) {
-            if (err) throw err;
-            console.log('Added', addToLog, 'to logs');
-        },
-    );
-    res.status(200).json(addToLog);
+    const timeStamp = new Date().toISOString();
+    const addToLog = `${counter},${timeStamp}`;
+
+    fs.appendFile(filePath, addToLog + '\n', (err) => {
+        console.error('Error writing to file:', err);
+    });
+    res.status(200).type('text/plain').send(addToLog);
 });
 
 app.get('/log', (req: Request, res: Response) => {
-    fs.readFile(
-        path.join(import.meta.dirname, 'logs.txt'),
-        'utf8',
-        (err, data) => {
-            if (err) {
-                console.error('Error reading file:', err);
-                res.status(500).send('Error reading logs');
-                return;
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+            if (err.code === 'ENOENT') {
+                return res.type('text/plain').send('');
             }
+            console.error('Error reading file:', err);
+            res.status(500).send('Error reading logs');
+        }
 
-            if (!data) {
-                res.send('No log data found');
-                return;
-            }
-
-            res.type('text/plain').send(data);
-        },
-    );
+        res.type('text/plain').send(data);
+    });
 });
 
-app.listen(3000);
+app.listen(3000, () => {
+    console.log('Log service listening on port 3000');
+});
