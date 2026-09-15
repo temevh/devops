@@ -34,7 +34,7 @@ app.get('/log', async (req: Request, res: Response) => {
     try {
         const logData = await axios.get('http://log-service:3000/log');
         if (logData) {
-            res.status(200).json(logData);
+            res.status(200).type('text/plain').send(logData.data);
         } else {
             res.status(404).end();
         }

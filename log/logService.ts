@@ -13,7 +13,9 @@ app.get('/', (req: Request, res: Response) => {
     const addToLog = `${counter},${timeStamp}`;
 
     fs.appendFile(filePath, addToLog + '\n', (err) => {
-        console.error('Error writing to file:', err);
+        if (err) {
+            console.error('Error writing to file:', err);
+        }
     });
     res.status(200).type('text/plain').send(addToLog);
 });

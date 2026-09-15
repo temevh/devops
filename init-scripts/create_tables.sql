@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS bans (
+    id SERIAL PRIMARY KEY,
+    ipaddress VARCHAR(45) NOT NULL,
+    path TEXT NOT NULL,
+    timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

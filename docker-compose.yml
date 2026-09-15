@@ -52,9 +52,12 @@ services:
                 condition: service_healthy
         networks:
             - app-net
+        volumes:
+            - logdata:/app/log
 
 volumes:
     pgdata:
+    logdata:
 
 networks:
     app-net:
