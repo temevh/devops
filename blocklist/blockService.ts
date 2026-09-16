@@ -53,12 +53,13 @@ app.get('/blocklist', async (req: Request, res: Response) => {
         const dbRes = await pool.query(query);
         console.log('[Block-service] dbRes.rows', dbRes.rows);
         const output = dbRes.rows
-            .map(
-                (row) => {
-                    const timestamp = row.timestamp instanceof Date ? row.timestamp : new Date(row.timestamp);
-                    return `${row.ipaddress},${row.path},${timestamp.toISOString()}`;
-                }
-            )
+            .map((row) => {
+                const timestamp =
+                    row.timestamp instanceof Date
+                        ? row.timestamp
+                        : new Date(row.timestamp);
+                return `${row.ipaddress},${row.path},${timestamp.toISOString()}`;
+            })
             .join('\n');
 
         res.status(200).type('text/plain').send(output);
@@ -88,6 +89,12 @@ app.get('/isBlocked', async (req: Request, res: Response) => {
     }
 });
 
-app.listen(3000, () => {
-    console.log('Block service listening on port 3000');
+app.get('/clear', async (req: Request, res: Response) => {
+    try {
+        await pool.query('DELETE FROM bans');
+        res.status(200).type('text/plain').send('complete');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Database error');
+    }
 });

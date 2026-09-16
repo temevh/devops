@@ -44,14 +44,25 @@ app.get('/log', async (req: Request, res: Response) => {
     }
 });
 
-app.get('/blocklist', async (req: Request, res: Response) => {
+app.get('/clear', async (req: Request, res: Response) => {
     try {
-        const blockData = await axios.get(
-            'http://block-service:3000/blocklist',
+        const clearLogResult = await axios.get('http://log-service:3000/clear');
+        const clearBlockResult = await axios.get(
+            'http://block-service:3000/clear',
         );
 
-        res.status(200).type('text/plain').send(blockData.data);
+        if (
+            clearLogResult.data === 'complete' &&
+            clearBlockResult.data === 'complete'
+        ) {
+            res.status(200).type('text/plain').send('complete');
+        } else {
+            res.status(502)
+                .type('text/plain')
+                .send('Error clearing log and/or database');
+        }
     } catch (err) {
+        console.error(err);
         res.status(502).json({ error: 'Upstream service error' });
     }
 });

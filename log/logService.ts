@@ -34,6 +34,14 @@ app.get('/log', (req: Request, res: Response) => {
     });
 });
 
-app.listen(3000, () => {
-    console.log('Log service listening on port 3000');
+app.get('/clear', (req: Request, res: Response) => {
+    fs.writeFile(filePath, '', (err) => {
+        if (err) {
+            console.error('Error clearing log file:', err);
+            return res.status(500).send('Error clearing logs');
+        }
+        counter = 0;
+        res.status(200).type('text/plain').send('complete');
+    });
 });
+
