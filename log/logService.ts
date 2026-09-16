@@ -45,3 +45,6 @@ app.get('/clear', (req: Request, res: Response) => {
     });
 });
 
+app.listen(3000, () => {
+    console.log('Log service listening on port 3000');
+});

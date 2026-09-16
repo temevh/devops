@@ -44,7 +44,20 @@ app.get('/log', async (req: Request, res: Response) => {
     }
 });
 
+app.get('/blocklist', async (req: Request, res: Response) => {
+    try {
+        const blockData = await axios.get(
+            'http://block-service:3000/blocklist',
+        );
+
+        res.status(200).type('text/plain').send(blockData.data);
+    } catch (err) {
+        res.status(502).json({ error: 'Upstream service error' });
+    }
+});
+
 app.get('/clear', async (req: Request, res: Response) => {
+    console.log('GETTING CLEAR IN API-SERVICE');
     try {
         const clearLogResult = await axios.get('http://log-service:3000/clear');
         const clearBlockResult = await axios.get(

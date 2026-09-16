@@ -40,6 +40,8 @@ services:
                 condition: service_healthy
             block-service:
                 condition: service_started
+            log-service:
+                condition: service_started
         networks:
             - app-net
 

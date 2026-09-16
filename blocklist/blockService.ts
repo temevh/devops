@@ -98,3 +98,7 @@ app.get('/clear', async (req: Request, res: Response) => {
         res.status(500).send('Database error');
     }
 });
+
+app.listen(3000, () => {
+    console.log('Block service listening on port 3000');
+});
