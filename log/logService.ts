@@ -7,14 +7,15 @@ let counter = 0;
 
 const filePath = path.join(import.meta.dirname, 'logs.txt');
 
-app.get('/', (req: Request, res: Response) => {
+app.get('/', async (req: Request, res: Response) => {
     counter += 1;
     const timeStamp = new Date().toISOString();
     const addToLog = `${counter},${timeStamp}`;
 
-    fs.appendFile(filePath, addToLog + '\n', (err) => {
+    await fs.appendFile(filePath, addToLog + '\n', (err) => {
         if (err) {
             console.error('Error writing to file:', err);
+            return;
         }
     });
     res.status(200).type('text/plain').send(addToLog);

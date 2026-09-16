@@ -18,11 +18,6 @@ app.post('/blocklist', async (req: Request, res: Response) => {
         const body = req.body;
         console.log(body);
         const [ip, path] = body.split(',');
-        const timeStamp = new Date().toISOString();
-        await pool.query(
-            'INSERT INTO bans (ipaddress, path, timestamp) VALUES ($1, $2, $3)',
-            [ip, path, timeStamp],
-        );
 
         const checkRes = await pool.query(
             'SELECT * FROM bans WHERE ipaddress = $1',
@@ -31,6 +26,11 @@ app.post('/blocklist', async (req: Request, res: Response) => {
         if (checkRes.rowCount && checkRes.rowCount >= 2) {
             blocked = true;
         } else {
+            const timeStamp = new Date().toISOString();
+            await pool.query(
+                'INSERT INTO bans (ipaddress, path, timestamp) VALUES ($1, $2, $3)',
+                [ip, path, timeStamp],
+            );
             blocked = false;
         }
         res.status(201).type('text/plain').send(blocked.toString());
@@ -79,13 +79,16 @@ app.get('/isBlocked', async (req: Request, res: Response) => {
             if (dbRes.rowCount !== null) {
                 const blocked = dbRes.rowCount >= 2;
                 console.log('blocked', blocked);
-                res.status(201).type('text/plain').send(blocked);
+                res.status(200).type('text/plain').send(blocked);
+                return;
             }
             res.status(502);
         } catch (err) {
             console.error(err);
             res.status(502);
         }
+    } else {
+        res.status(502);
     }
 });
 

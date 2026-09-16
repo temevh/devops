@@ -22,7 +22,7 @@ app.get('/', async (req: Request, res: Response) => {
         console.log('[API-service] isblocked', isBlocked);
         if (!isBlocked) {
             const logRes = await axios.get('http://log-service:3000/');
-            res.status(200).json(logRes.data);
+            res.status(200).type('text/plain').send(logRes.data);
         } else if (isBlocked) {
             res.status(404).end();
         }
@@ -40,7 +40,8 @@ app.get('/log', async (req: Request, res: Response) => {
             res.status(404).end();
         }
     } catch (err) {
-        res.status(502).json(err);
+        console.error(err);
+        res.status(502).end();
     }
 });
 

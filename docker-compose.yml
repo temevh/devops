@@ -36,8 +36,6 @@ services:
         ports:
             - '8199:8199'
         depends_on:
-            postgres:
-                condition: service_healthy
             block-service:
                 condition: service_started
             log-service:
@@ -49,9 +47,6 @@ services:
         build:
             context: .
             dockerfile: log/Dockerfile
-        depends_on:
-            postgres:
-                condition: service_healthy
         networks:
             - app-net
         volumes:
