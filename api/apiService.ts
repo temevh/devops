@@ -45,17 +45,15 @@ app.get('/log', async (req: Request, res: Response) => {
 
 app.get('/blocklist', async (req: Request, res: Response) => {
     const ip = getIp(req);
-    console.log('IP', ip);
+    const path = req.path;
+
     try {
-        const blockData = await axios.get(
+        const blockData = await axios.post(
             'http://block-service:3000/blocklist',
-            { headers: { ip: ip } },
+            `${ip},${path}`,
+            { headers: { 'Content-Type': 'text/plain' } },
         );
-        if (blockData) {
-            res.status(200).json(blockData);
-        } else {
-            res.status(404).end();
-        }
+        res.status(200).type('text/plain').send(blockData.data);
     } catch (err) {
         res.status(502).json(err);
     }
