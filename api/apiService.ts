@@ -19,6 +19,7 @@ app.get('/', async (req: Request, res: Response) => {
     try {
         const blockRes = await axios.get(uri);
         const isBlocked = JSON.parse(blockRes.data);
+        console.log('[API-service] isblocked', isBlocked);
         if (!isBlocked) {
             const logRes = await axios.get('http://log-service:3000/');
             res.status(200).json(logRes.data);
@@ -44,18 +45,38 @@ app.get('/log', async (req: Request, res: Response) => {
 });
 
 app.get('/blocklist', async (req: Request, res: Response) => {
+    try {
+        const blockData = await axios.get(
+            'http://block-service:3000/blocklist',
+        );
+
+        res.status(200).type('text/plain').send(blockData.data);
+    } catch (err) {
+        res.status(502).json({ error: 'Upstream service error' });
+    }
+});
+
+app.use(async (req: Request, res: Response) => {
     const ip = getIp(req);
     const path = req.path;
 
     try {
-        const blockData = await axios.post(
+        const response = await axios.post(
             'http://block-service:3000/blocklist',
             `${ip},${path}`,
             { headers: { 'Content-Type': 'text/plain' } },
         );
-        res.status(200).type('text/plain').send(blockData.data);
+
+        const blocked = response.data === 'true';
+
+        if (blocked) {
+            res.status(404).end();
+        } else {
+            res.status(401).send('Unauthorized');
+        }
     } catch (err) {
-        res.status(502).json(err);
+        console.error(err);
+        res.status(502).json({ error: 'Upstream service error' });
     }
 });
 

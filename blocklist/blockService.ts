@@ -18,10 +18,11 @@ app.post('/blocklist', async (req: Request, res: Response) => {
         const body = req.body;
         console.log(body);
         const [ip, path] = body.split(',');
-        await pool.query('INSERT INTO bans (ipaddress, path) VALUES ($1, $2)', [
-            ip,
-            path,
-        ]);
+        const timeStamp = new Date().toISOString();
+        await pool.query(
+            'INSERT INTO bans (ipaddress, path, timestamp) VALUES ($1, $2, $3)',
+            [ip, path, timeStamp],
+        );
 
         const checkRes = await pool.query(
             'SELECT * FROM bans WHERE ipaddress = $1',
@@ -40,6 +41,7 @@ app.post('/blocklist', async (req: Request, res: Response) => {
 });
 
 app.get('/blocklist', async (req: Request, res: Response) => {
+    console.log('[Block-service] blocklist invoked');
     try {
         const query = `SELECT ipaddress, path, timestamp FROM bans
             WHERE ipaddress IN (
@@ -49,13 +51,17 @@ app.get('/blocklist', async (req: Request, res: Response) => {
             HAVING COUNT(*) >= 2
             ) ORDER BY ipaddress ASC;`;
         const dbRes = await pool.query(query);
+        console.log('[Block-service] dbRes.rows', dbRes.rows);
         const output = dbRes.rows
             .map(
-                (row) =>
-                    `${row.ipaddress},${row.path},${row.timestamp.toISOString()}`,
+                (row) => {
+                    const timestamp = row.timestamp instanceof Date ? row.timestamp : new Date(row.timestamp);
+                    return `${row.ipaddress},${row.path},${timestamp.toISOString()}`;
+                }
             )
             .join('\n');
-        res.status(201).type('text/plain').send(output);
+
+        res.status(200).type('text/plain').send(output);
     } catch (err) {
         console.error(err);
         res.status(502).send('Database error');
@@ -64,14 +70,12 @@ app.get('/blocklist', async (req: Request, res: Response) => {
 
 app.get('/isBlocked', async (req: Request, res: Response) => {
     const { ip } = req.query;
-    const bannedIps = [];
     if (ip) {
         try {
             console.log('Checking for IP', ip);
             const query = `SELECT * FROM bans WHERE ipaddress = '${ip}'`;
             const dbRes = await pool.query(query);
-            console.log(dbRes);
-            if (dbRes.rowCount) {
+            if (dbRes.rowCount !== null) {
                 const blocked = dbRes.rowCount >= 2;
                 console.log('blocked', blocked);
                 res.status(201).type('text/plain').send(blocked);
