@@ -18,30 +18,26 @@ app.get('/', async (req: Request, res: Response) => {
     const uri = `http://block-service:3000/isBlocked?ip=${encodeURIComponent(ip)}`;
     try {
         const blockRes = await axios.get(uri);
-        const isBlocked = JSON.parse(blockRes.data);
-        console.log('[API-service] isblocked', isBlocked);
+        const isBlocked = blockRes.data === true || blockRes.data === 'true';
         if (!isBlocked) {
             const logRes = await axios.get('http://log-service:3000/');
             res.status(200).type('text/plain').send(logRes.data);
-        } else if (isBlocked) {
+        } else {
             res.status(404).end();
         }
     } catch (err) {
-        res.status(502).json(err);
+        console.error(err);
+        res.status(502).type('text/plain').send('Bad Gateway');
     }
 });
 
 app.get('/log', async (req: Request, res: Response) => {
     try {
         const logData = await axios.get('http://log-service:3000/log');
-        if (logData) {
-            res.status(200).type('text/plain').send(logData.data);
-        } else {
-            res.status(404).end();
-        }
+        res.status(200).type('text/plain').send(logData.data);
     } catch (err) {
         console.error(err);
-        res.status(502).end();
+        res.status(502).type('text/plain').send('Bad Gateway');
     }
 });
 
@@ -53,12 +49,12 @@ app.get('/blocklist', async (req: Request, res: Response) => {
 
         res.status(200).type('text/plain').send(blockData.data);
     } catch (err) {
-        res.status(502).json({ error: 'Upstream service error' });
+        console.error(err);
+        res.status(502).type('text/plain').send('Bad Gateway');
     }
 });
 
 app.get('/clear', async (req: Request, res: Response) => {
-    console.log('GETTING CLEAR IN API-SERVICE');
     try {
         const clearLogResult = await axios.get('http://log-service:3000/clear');
         const clearBlockResult = await axios.get(
@@ -77,7 +73,7 @@ app.get('/clear', async (req: Request, res: Response) => {
         }
     } catch (err) {
         console.error(err);
-        res.status(502).json({ error: 'Upstream service error' });
+        res.status(502).type('text/plain').send('Bad Gateway');
     }
 });
 
@@ -92,16 +88,16 @@ app.use(async (req: Request, res: Response) => {
             { headers: { 'Content-Type': 'text/plain' } },
         );
 
-        const blocked = response.data === 'true';
+        const blocked = response.data === true || response.data === 'true';
 
         if (blocked) {
-            res.status(404).end();
+            res.status(401).type('text/plain').send('true');
         } else {
-            res.status(401).send('Unauthorized');
+            res.status(201).type('text/plain').send('false');
         }
     } catch (err) {
         console.error(err);
-        res.status(502).json({ error: 'Upstream service error' });
+        res.status(502).type('text/plain').send('Bad Gateway');
     }
 });
 

@@ -16,22 +16,22 @@ app.post('/blocklist', async (req: Request, res: Response) => {
     try {
         let blocked;
         const body = req.body;
-        console.log(body);
         const [ip, path] = body.split(',');
 
         const checkRes = await pool.query(
-            'SELECT * FROM bans WHERE ipaddress = $1',
+            'SELECT COUNT(*)::int as count FROM bans WHERE ipaddress = $1',
             [ip],
         );
-        if (checkRes.rowCount && checkRes.rowCount >= 2) {
+        const count = checkRes.rows[0].count;
+        if (count >= 2) {
             blocked = true;
         } else {
-            const timeStamp = new Date().toISOString();
+            const timeStamp = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
             await pool.query(
                 'INSERT INTO bans (ipaddress, path, timestamp) VALUES ($1, $2, $3)',
                 [ip, path, timeStamp],
             );
-            blocked = false;
+            blocked = count + 1 >= 2;
         }
         res.status(201).type('text/plain').send(blocked.toString());
     } catch (err) {
@@ -41,7 +41,6 @@ app.post('/blocklist', async (req: Request, res: Response) => {
 });
 
 app.get('/blocklist', async (req: Request, res: Response) => {
-    console.log('[Block-service] blocklist invoked');
     try {
         const query = `SELECT ipaddress, path, timestamp FROM bans
             WHERE ipaddress IN (
@@ -49,9 +48,8 @@ app.get('/blocklist', async (req: Request, res: Response) => {
             FROM bans
             GROUP BY ipaddress
             HAVING COUNT(*) >= 2
-            ) ORDER BY ipaddress ASC;`;
+            ) ORDER BY ipaddress ASC, timestamp ASC;`;
         const dbRes = await pool.query(query);
-        console.log('[Block-service] dbRes.rows', dbRes.rows);
         const output = dbRes.rows
             .map((row) => {
                 const timestamp =
@@ -73,22 +71,18 @@ app.get('/isBlocked', async (req: Request, res: Response) => {
     const { ip } = req.query;
     if (ip) {
         try {
-            console.log('Checking for IP', ip);
-            const query = `SELECT * FROM bans WHERE ipaddress = '${ip}'`;
-            const dbRes = await pool.query(query);
-            if (dbRes.rowCount !== null) {
-                const blocked = dbRes.rowCount >= 2;
-                console.log('blocked', blocked);
-                res.status(200).type('text/plain').send(blocked);
-                return;
-            }
-            res.status(502);
+            const dbRes = await pool.query(
+                'SELECT COUNT(*)::int as count FROM bans WHERE ipaddress = $1',
+                [ip as string],
+            );
+            const blocked = dbRes.rows[0].count >= 2;
+            res.status(200).type('text/plain').send(blocked.toString());
         } catch (err) {
             console.error(err);
-            res.status(502);
+            res.status(502).type('text/plain').send('Database error');
         }
     } else {
-        res.status(502);
+        res.status(502).end();
     }
 });
 
