@@ -22,4 +22,6 @@ Maybe around 8 to 10
 
 Plan better beforehand what order the services should be implemented
 
-Link to docker screenshots -> https://ibb.co/zDjWkFF
+Link to docker screenshots
+https://ibb.co/zDjWkFF
+https://ibb.co/gbQ2BBzX
