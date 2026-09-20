@@ -11,7 +11,7 @@ const filePath = path.join(logDir, 'logs.txt');
 
 app.get('/', async (req: Request, res: Response) => {
     counter += 1;
-    const timeStamp = new Date().toISOString();
+    const timeStamp = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
     const addToLog = `${counter},${timeStamp}`;
 
     try {

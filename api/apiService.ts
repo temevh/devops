@@ -91,9 +91,9 @@ app.use(async (req: Request, res: Response) => {
         const blocked = response.data === true || response.data === 'true';
 
         if (blocked) {
-            res.status(401).type('text/plain').send('true');
+            res.status(404).end();
         } else {
-            res.status(201).type('text/plain').send('false');
+            res.status(401).end();
         }
     } catch (err) {
         console.error(err);

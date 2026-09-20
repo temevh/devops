@@ -56,7 +56,7 @@ app.get('/blocklist', async (req: Request, res: Response) => {
                     row.timestamp instanceof Date
                         ? row.timestamp
                         : new Date(row.timestamp);
-                return `${row.ipaddress},${row.path},${timestamp.toISOString()}`;
+                return `${row.ipaddress},${row.path},${timestamp.toISOString().replace(/\.\d+Z$/, 'Z')}`;
             })
             .join('\n');
 
