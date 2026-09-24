@@ -1,18 +1,21 @@
 stages:
     - build
 
+variables:
+    IMAGE_NAME: 'log-service'
+
 build:
+    stage: build
     tags:
         - SE140-2026
-    stage: build
     image:
-        name: alpine:latest
+        name: quay.io/podman/stable
         pull_policy: always
     script:
-        - apk add --no-cache nodejs npm
-        - npm ci
-        - npx tsc log/logService.ts --outDir dist --module nodenext --target esnext
+        - podman --version
+        - podman build -f log/Dockerfile -t ${IMAGE_NAME}:latest .
+        - podman save -o log-service.tar ${IMAGE_NAME}:latest
     artifacts:
-        name: log-service-artifact
+        name: logservice-artifact
         paths:
-            - dist/
+            - log-service.tar
