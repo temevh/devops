@@ -35,7 +35,7 @@ test:
         - podman rm test-container
         - exit ${TEST_EXIT:-0}
     artifacts:
-        - name: logservice-test-report
-          when: always
-          reports:
-              junit: test-report.xml
+        name: logservice-test-report
+        when: always
+        reports:
+            junit: test-report.xml
