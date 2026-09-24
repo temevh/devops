@@ -1,5 +1,6 @@
 stages:
     - build
+    - test
 
 variables:
     IMAGE_NAME: 'log-service'
@@ -19,3 +20,11 @@ build:
         name: logservice-artifact
         paths:
             - log-service.tar
+
+test:
+    stage: test
+    tags:
+        - SE140-2026
+    image:
+        name: quay.io/podman/stable
+        pull_policy: always

@@ -1,8 +1,9 @@
+export {};
 import express, { type Express, type Request, type Response } from 'express';
 import fs from 'fs';
 import path from 'path';
 
-const app: Express = express();
+export const app: Express = express();
 let counter = 0;
 
 const logDir = process.env.LOG_DIR || path.join(import.meta.dirname, 'data');
