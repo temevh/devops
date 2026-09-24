@@ -3,7 +3,7 @@ stages:
     - test
 
 variables:
-    IMAGE_NAME: 'log-service'
+    IMAGE_TAG: $CI_REGISTRY_IMAGE:latest
 
 build:
     stage: build
@@ -28,3 +28,6 @@ test:
     image:
         name: quay.io/podman/stable
         pull_policy: always
+    script:
+        - podman load -i log-service.tar
+        - podman run --rm ${IMAGE_NAME}:latest npx tsx --test --test-force-exit log/logService.test.ts
