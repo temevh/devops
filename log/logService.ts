@@ -47,6 +47,6 @@ app.get('/clear', async (req: Request, res: Response) => {
     }
 });
 
-app.listen(3000, () => {
+app.listen(Number(process.env.PORT ?? '3000'), () => {
     console.log('Log service listening on port 3000');
 });

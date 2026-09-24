@@ -1,0 +1,9 @@
+stages:
+    - build
+
+build:
+    tags:
+        - SE140-2026
+    stage: build
+    script:
+        - echo "STARTING BUILD"
