@@ -7,8 +7,9 @@ build:
     stage: build
     image:
         name: alpine:latest
+        pull_policy: always
     script:
-        - echo "STARTING BUILD"
+        - apk add --no-cache nodejs npm
         - npm ci
         - npx tsc log/logService.ts --outDir dist --module nodenext --target esnext
     artifacts:
