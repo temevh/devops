@@ -3,7 +3,7 @@ stages:
     - test
 
 variables:
-    IMAGE_TAG: $CI_REGISTRY_IMAGE:latest
+    IMAGE_NAME: 'log-service'
 
 build:
     stage: build
