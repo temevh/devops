@@ -8,6 +8,7 @@ build:
     image:
         name: alpine:latest
     script:
+        - echo "STARTING BUILD"
         - npm ci
         - npx tsc log/logService.ts --outDir dist --module nodenext --target esnext
     artifacts:
