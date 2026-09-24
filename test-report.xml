@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+	<testcase name="GET / returns a status 200" time="0.023072" classname="test" file="C:\koodit\devops\log\logService.test.ts"/>
+	<testcase name="GET /log returns data " time="0.011210" classname="test" file="C:\koodit\devops\log\logService.test.ts"/>
+	<testcase name="GET /clear clears the logfile " time="0.007064" classname="test" file="C:\koodit\devops\log\logService.test.ts"/>
+	<!-- tests 3 -->
+	<!-- suites 0 -->
+	<!-- pass 3 -->
+	<!-- fail 0 -->
+	<!-- cancelled 0 -->
+	<!-- skipped 0 -->
+	<!-- todo 0 -->
+	<!-- duration_ms 390.3658 -->
+</testsuites>

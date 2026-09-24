@@ -30,4 +30,12 @@ test:
         pull_policy: always
     script:
         - podman load -i log-service.tar
-        - podman run --rm ${IMAGE_NAME}:latest npx tsx --test --test-force-exit log/logService.test.ts
+        - podman run --name test-container ${IMAGE_NAME}:latest npx tsx --test --test-force-exit --test-reporter=junit --test-reporter-destination=test-report.xml log/logService.test.ts || TEST_EXIT=$?
+        - podman cp test-container:/app/test-report.xml ./test-report.xml
+        - podman rm test-container
+        - exit ${TEST_EXIT:-0}
+    artifacts:
+        - name: logservice-test-report
+          when: always
+          reports:
+              junit: test-report.xml
