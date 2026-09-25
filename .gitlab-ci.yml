@@ -49,8 +49,8 @@ package:
         name: quay.io/podman/stable
         pull_policy: always
     script:
-        - podman build -f log/Dockerfile -t ${IMAGE_NAME}:latest .
-        - podman save -o log-service.tar ${IMAGE_NAME}:latest
+        - cp -r log-service.tar/ docker-context/
+        - docker build -f Dockerfile docker-context/ ${IMAGE_NAME}:latest
     artifacts:
         name: package-artifact
         when: always
