@@ -6,7 +6,6 @@ stages:
 
 variables:
     IMAGE_NAME: 'log-service'
-    PACKAGE_NAME: 'package:${CI_COMMIT_SHORT_SHA}'
 
 build:
     stage: build
@@ -49,6 +48,8 @@ package:
     image:
         name: quay.io/podman/stable
         pull_policy: always
+    variables:
+        PACKAGE_NAME: 'package:${CI_COMMIT_SHORT_SHA}'
     script:
         - |
             cat <<EOF > Dockerfile
@@ -72,6 +73,10 @@ smoketest:
     image:
         name: quay.io/podman/stable
         pull_policy: always
+    variables:
+        PACKAGE_NAME: 'package:${CI_COMMIT_SHORT_SHA}'
     script:
-        - podman load -i package-artifact/devops-package.tar.gz
-        - podman run --name smoketest-package ${PACKAGE_NAME}:latest
+        - gzip -dc package-artifact/devops-package.tar.gz
+        - podman load
+        - podman images
+        - podman run --rm "$PACKAGE_NAME"
