@@ -14,14 +14,12 @@ build:
         name: quay.io/podman/stable
         pull_policy: always
     script:
-        - podman --version
         - podman build -f log/Dockerfile -t ${IMAGE_NAME}:latest .
         - podman save -o log-service.tar ${IMAGE_NAME}:latest
     artifacts:
         name: logservice-artifact
         paths:
             - log-service.tar
-            - build
 
 test:
     stage: test
@@ -52,13 +50,11 @@ package:
     variables:
         PACKAGE_NAME: 'package:${CI_COMMIT_SHORT_SHA}'
     script:
-        - ls -la
         - |
             cat <<EOF > Dockerfile
             FROM alpine:latest
             WORKDIR /app
             COPY log-service.tar /app/log-service.tar
-            CMD ["ls", "-la", "/app"]
             EOF
         - podman build -t "$PACKAGE_NAME" .
         - mkdir -p package-artifact
