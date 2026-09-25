@@ -50,25 +50,33 @@ package:
         pull_policy: always
     variables:
         PACKAGE_NAME: 'package:${CI_COMMIT_SHORT_SHA}'
+    dependencies: []
     script:
+        - |
+            cat <<EOF > .dockerignore
+            .git
+            *.tar
+            *.tar.gz
+            package-artifact
+            EOF
         - |
             cat <<EOF > Dockerfile
             FROM node:20-alpine
             WORKDIR /app
             COPY package*.json ./
-            RUN npm ci
+            RUN npm ci --omit=dev
             COPY . .
             EXPOSE 1337
             CMD ["node", "dist/index.js"]
             EOF
         - podman build -t "$PACKAGE_NAME" .
         - mkdir -p package-artifact
-        - podman save "$PACKAGE_NAME" | gzip > package-artifact/devops-package.tar.gz
+        - podman save "$PACKAGE_NAME" | gzip -9  > package-artifact/devops-package.tar.gz
     artifacts:
         name: package-artifact
         paths:
             - package-artifact/devops-package.tar.gz
-        when: always
+        when: on_success
 
 smoketest:
     stage: smoketest
