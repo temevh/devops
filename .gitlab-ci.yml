@@ -78,5 +78,8 @@ smoketest:
     script:
         - ls -lh package-artifact/
         - gzip -dc package-artifact/devops-package.tar.gz | podman load
-        - podman images
-        - podman run --rm "$PACKAGE_NAME"
+        - podman run -d --name package-smoketest -p 1337:1337 --rm "$PACKAGE_NAME"
+        - sleep 5
+        - curl -v http://127.0.0.1:1337/ || podman logs package-smoketest
+        - podman stop package-smoketest
+        - podman rm package-smoketest
