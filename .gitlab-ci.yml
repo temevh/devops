@@ -52,12 +52,13 @@ package:
     variables:
         PACKAGE_NAME: 'package:${CI_COMMIT_SHORT_SHA}'
     script:
+        - ls -la
         - |
             cat <<EOF > Dockerfile
             FROM alpine:latest
             WORKDIR /app
-            COPY build/app.bin /app/app.bin
-            CMD ["cat", "/app/app.bin"]
+            COPY log-service.tar /app/log-service.tar
+            CMD ["ls", "-la", "/app"]
             EOF
         - podman build -t "$PACKAGE_NAME" .
         - mkdir -p package-artifact
