@@ -1,6 +1,7 @@
 stages:
     - build
     - test
+    - package
 
 variables:
     IMAGE_NAME: 'log-service'
@@ -39,3 +40,17 @@ test:
         when: always
         reports:
             junit: test-report.xml
+
+package:
+    stage: package
+    tags:
+        - SE140-2026
+    image:
+        name: quay.io/podman/stable
+        pull_policy: always
+    script:
+        - podman build -f log/Dockerfile -t ${IMAGE_NAME}:latest .
+        - podman save -o log-service.tar ${IMAGE_NAME}:latest
+    artifacts:
+        name: package-artifact
+        when: always
