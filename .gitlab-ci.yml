@@ -21,6 +21,7 @@ build:
         name: logservice-artifact
         paths:
             - log-service.tar
+            - build
 
 test:
     stage: test
@@ -49,7 +50,7 @@ package:
         name: quay.io/podman/stable
         pull_policy: always
     script:
-        - cp -r log-service.tar/ docker-context/
+        - cp -r build/ docker-context/
         - docker build -f Dockerfile docker-context/ ${IMAGE_NAME}:latest
     artifacts:
         name: package-artifact
