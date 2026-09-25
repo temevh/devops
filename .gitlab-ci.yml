@@ -76,7 +76,7 @@ smoketest:
     variables:
         PACKAGE_NAME: 'package:${CI_COMMIT_SHORT_SHA}'
     script:
-        - gzip -dc package-artifact/devops-package.tar.gz
-        - podman load
+        - ls -lh package-artifact/
+        - gzip -dc package-artifact/devops-package.tar.gz | podman load
         - podman images
         - podman run --rm "$PACKAGE_NAME"
