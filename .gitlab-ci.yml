@@ -50,7 +50,7 @@ package:
         name: quay.io/podman/stable
         pull_policy: always
     variables:
-        IMAGE_NAME: 'my-app:${CI_COMMIT_SHORT_SHA}'
+        PACKAGE_NAME: 'package:${CI_COMMIT_SHORT_SHA}'
     script:
         - |
             cat <<EOF > Dockerfile
@@ -59,9 +59,9 @@ package:
             COPY build/app.bin /app/app.bin
             CMD ["cat", "/app/app.bin"]
             EOF
-        - podman build -t "$IMAGE_NAME"
+        - podman build -t "$PACKAGE_NAME" .
         - mkdir -p package-artifact
-        - podman save "$IMAGE_NAME" | gzip > package-artifact/devops-package.tar.gz
+        - podman save "$PACKAGE_NAME" | gzip > package-artifact/devops-package.tar.gz
     artifacts:
         name: package-artifact
         paths:
