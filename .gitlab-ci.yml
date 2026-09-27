@@ -99,18 +99,9 @@ scan:
         name: docker.io/aquasec/trivy:latest
         entrypoint: ['']
         pull_policy: always
-
-    variables:
-        GIT_STRATEGY: none
-        TRIVY_USERNAME: '$CI_REGISTRY_USER'
-        TRIVY_PASSWORD: '$CI_REGISTRY_PASSWORD'
-        TRIVY_AUTH_URL: '$CI_REGISTRY'
-        TRIVY_NO_PROGRESS: 'true'
-        TRIVY_CACHE_DIR: '.trivycache/'
-        FULL_IMAGE_NAME: 'package:${CI_COMMIT_SHORT_SHA}'
     script:
         - trivy --version
         - time trivy image --download-db-only
-        - time trivy image --exit-code 0 --format template --template "@/contrib/gitlab.tpl" --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "package-artifact/devops-package.tar.gz"
-        - time trivy image --exit-code 0 "package-artifact/devops-package.tar.gz"
-        - time trivy image --exit-code 1 --severity CRITICAL "package-artifact/devops-package.tar.gz"
+        - time trivy image --exit-code 0 --format template --template "@/contrib/gitlab.tpl" --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" --input "package-artifact/devops-package.tar.gz"
+        - time trivy image --exit-code 0  --input "package-artifact/devops-package.tar.gz"
+        - time trivy image --exit-code 1 --severity CRITICAL --input "package-artifact/devops-package.tar.gz"
