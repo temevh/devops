@@ -57,6 +57,7 @@ package:
         - |
             cat <<EOF > Dockerfile
             FROM log-service:latest
+            RUN ["npm", "prune", "--omit=dev"]
             EXPOSE 1337
             ENV PORT=1337
             CMD ["npx", "tsx", "log/logService.ts"]
