@@ -113,7 +113,3 @@ scan:
     script:
         - trivy --version
         - time trivy image --download-db-only
-    artifacts:
-    when: always
-    reports:
-        container_scanning: container-scanning-report.json
