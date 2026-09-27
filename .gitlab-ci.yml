@@ -111,3 +111,6 @@ scan:
     script:
         - trivy --version
         - time trivy image --download-db-only
+        - time trivy image --exit-code 0 --format template --template "@/contrib/gitlab.tpl" --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "package-artifact/devops-package.tar.gz"
+        - time trivy image --exit-code 0 "package-artifact/devops-package.tar.gz"
+        - time trivy image --exit-code 1 --severity CRITICAL "package-artifact/devops-package.tar.gz"
