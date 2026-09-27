@@ -8,9 +8,6 @@ stages:
 variables:
     IMAGE_NAME: 'log-service'
 
-include:
-    - template: Security/Container-Scanning.gitlab-ci.yml
-
 build:
     stage: build
     tags:
