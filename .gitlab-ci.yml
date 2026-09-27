@@ -52,23 +52,13 @@ package:
         PACKAGE_NAME: 'package:${CI_COMMIT_SHORT_SHA}'
     dependencies: []
     script:
-        - |
-            cat <<EOF > .dockerignore
-            .git
-            *.tar
-            *.tar.gz
-            package-artifact
-            EOF
+        - podman load -i log-service.tar
         - |
             cat <<EOF > Dockerfile
-            FROM node:20-alpine
-            WORKDIR /app
-            COPY package*.json ./
-            RUN npm ci --omit=dev
-            COPY . .
-            RUN npx tsx build
+            FROM log-service:latest
             EXPOSE 1337
-            CMD ["node", "dist/index.js"]
+            ENV PORT=1337
+            CMD ["npx", "tsx", "log/logService.ts"]
             EOF
         - podman build -t "$PACKAGE_NAME" .
         - mkdir -p package-artifact
