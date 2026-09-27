@@ -3,6 +3,7 @@ stages:
     - test
     - package
     - smoketest
+    - scan
 
 variables:
     IMAGE_NAME: 'log-service'
@@ -89,3 +90,27 @@ smoketest:
         - curl --fail -v http://127.0.0.1:1337/
     after_script:
         - podman rm -f package-smoketest || true
+
+scan:
+    stage: scan
+    tags:
+        - SE140-2026
+    image:
+        name: quay.io/podman/stable
+        pull_policy: always
+    include:
+        - template: Security/Container-Scanning.gitlab-ci.yml
+    variables:
+        GIT_STRATEGY: none
+        TRIVY_USERNAME: '$CI_REGISTRY_USER'
+        TRIVY_PASSWORD: '$CI_REGISTRY_PASSWORD'
+        TRIVY_AUTH_URL: '$CI_REGISTRY'
+        TRIVY_NO_PROGRESS: 'true'
+        TRIVY_CACHE_DIR: '.trivycache/'
+        FULL_IMAGE_NAME: 'package:${CI_COMMIT_SHORT_SHA}'
+    script:
+        - trivy --version
+    artifacts:
+    when: always
+    reports:
+        container_scanning: container-scanning-report.json
