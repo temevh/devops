@@ -104,4 +104,7 @@ scan:
         - time trivy image --download-db-only
         - time trivy image --exit-code 0 --format template --template "@/contrib/gitlab.tpl" --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" --input "package-artifact/devops-package.tar.gz"
         - time trivy image --exit-code 0  --input "package-artifact/devops-package.tar.gz"
+        - time trivy image --exit-code 0 --severity LOW --input "package-artifact/devops-package.tar.gz"
+        - time trivy image --exit-code 0 --severity MEDIUM --input "package-artifact/devops-package.tar.gz"
+        - time trivy image --exit-code 1 --severity HIGH --input "package-artifact/devops-package.tar.gz"
         - time trivy image --exit-code 1 --severity CRITICAL --input "package-artifact/devops-package.tar.gz"
