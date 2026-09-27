@@ -50,7 +50,6 @@ package:
         pull_policy: always
     variables:
         PACKAGE_NAME: 'package:${CI_COMMIT_SHORT_SHA}'
-    dependencies: []
     script:
         - podman load -i log-service.tar
         - |
@@ -87,6 +86,6 @@ smoketest:
         - sleep 5
         - podman ps -a
         - podman logs package-smoketest
-        - curl --fail -v http://127.0.0.1:1337
+        - curl --fail -v http://127.0.0.1:1337/
     after_script:
         - podman rm -f package-smoketest || true
