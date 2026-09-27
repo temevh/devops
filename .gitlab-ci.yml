@@ -4,6 +4,7 @@ stages:
     - package
     - smoketest
     - scan
+    - deliver
 
 variables:
     IMAGE_NAME: 'log-service'
@@ -108,3 +109,14 @@ scan:
         - time trivy image --exit-code 0 --severity MEDIUM --input "package-artifact/devops-package.tar.gz"
         - time trivy image --exit-code 1 --severity HIGH --input "package-artifact/devops-package.tar.gz"
         - time trivy image --exit-code 1 --severity CRITICAL --input "package-artifact/devops-package.tar.gz"
+
+deliver:
+    stage: deliver
+    tags:
+        - SE140-2026
+    image:
+        name: quay.io/podman/stable
+        pull_policy: always
+    script:
+        - podman login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+        - podman load -i ${IMAGE_NAME}:latest
