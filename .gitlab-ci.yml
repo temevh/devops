@@ -96,7 +96,8 @@ scan:
     tags:
         - SE140-2026
     image:
-        name: quay.io/podman/stable
+        name: docker.io/aquasec/trivy:latest
+        entrypoint: ['']
         pull_policy: always
 
     variables:
