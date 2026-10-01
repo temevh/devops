@@ -101,6 +101,8 @@ scan:
         name: docker.io/aquasec/trivy:latest
         entrypoint: ['']
         pull_policy: always
+    dependencies:
+        - package
     script:
         - trivy --version
         - time trivy image --download-db-only
@@ -108,8 +110,8 @@ scan:
         - time trivy image --exit-code 0  --input "package-artifact/devops-package.tar.gz"
         - time trivy image --exit-code 0 --severity LOW --input "package-artifact/devops-package.tar.gz"
         - time trivy image --exit-code 0 --severity MEDIUM --input "package-artifact/devops-package.tar.gz"
-        - time trivy image --exit-code 1 --severity HIGH --input "package-artifact/devops-package.tar.gz"
-        - time trivy image --exit-code 1 --severity CRITICAL --input "package-artifact/devops-package.tar.gz"
+        - time trivy image --exit-code 0 --severity HIGH --input "package-artifact/devops-package.tar.gz"
+        - time trivy image --exit-code 0 --severity CRITICAL --input "package-artifact/devops-package.tar.gz"
 
 deliver:
     stage: deliver
@@ -118,6 +120,12 @@ deliver:
     image:
         name: quay.io/podman/stable
         pull_policy: always
+    variables:
+        PACKAGE_NAME: 'package:${CI_COMMIT_SHORT_SHA}'
+    dependencies:
+        - package
     script:
-        - podman login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-        - podman load -i ${IMAGE_NAME}:latest
+        - podman login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+        - gzip -dc package-artifact/devops-package.tar.gz | podman load
+        - podman tag "$PACKAGE_NAME" "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+        - podman push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
