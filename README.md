@@ -1,27 +1,31 @@
-1. How well did you knew Docker, docker-compose, databases and REST APIs beforehand?
+How well did you knew CI/CD pipelines, image repositories, container scanners beforehand?
 
-I had some previous basic experience with docker and docker compose. I havent used postgresql that much before, REST APIs were very familiar to me
+CI/CD and pipelines were completely new to me. I was somewhat familiar with containers but not with podman which resulted in some confusions.
 
-2. What new did you learn?
+What new did you learn?
 
-Service orchestration, postgresql usage
+How to configure pipelines and manage different stages
 
-3. What was difficult, what was easy?
+What was difficult, what was easy?
 
-THe basic endpoints. Setting up the services to talk with each other had some kinks.
+Having/passing a correct artifact. Ordering of podman scripts and when to use/not use podman/docker
 
-4. What were the main problems?
+What were the main problems?
 
-Making sure everything works as instructed
+Lack of guidance. Felt very much like stumbling through the whole thing.
 
-5. How many hours did you use for the task?
+How many hours did you use for the task?
 
-Maybe around 8 to 10
+~10 to 12
 
-6. What would you do differently if you had to redo (re-design) the exercise?
+What would you do differently if you had to redo (or re-design) the exercise?
 
-Plan better beforehand what order the services should be implemented
+Add clearer guidance and maybe some resources. Also setting up the runner was quite confusing at the start for me.
 
-Link to docker screenshots
-https://ibb.co/zDjWkFF
-https://ibb.co/gbQ2BBzX
+NOTE: I was not able to completely remove HIGH and CRITICAL level vulnerabilities from the source code due to npm packages being notorious for being exploited by supply chain attacks. The HIGH and CRITICAL vulnerabilies were originating from dependency packages which I thought was out of the scope of the course to start fixing
+
+Images:
+
+Pipeline status -> https://postimg.cc/R6V6Fhky
+Test report -> https://postimg.cc/75kLhb7G
+Vulnerability scan -> https://postimg.cc/BLkS0v4F
